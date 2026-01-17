@@ -1,8 +1,9 @@
 import random
 import copy
-import dummy_env as env  # <--- TODO: CHANGE THIS TO: import real_env as env
+import gp_engine as gp       # The DNA/Tree Factory
+import main_env as problem   # The Oracle/Teacher (Infinite Generator)
 
-# Check if matplotlib is installed for graphing (Optional but recommended)
+# Check if matplotlib is installed for graphing
 try:
     import matplotlib.pyplot as plt
     HAS_MATPLOTLIB = True
@@ -13,59 +14,45 @@ except ImportError:
 # ==========================================
 # CONFIGURATION
 # ==========================================
-POPULATION_SIZE = 100
-GENERATIONS = 30
-TOURNAMENT_SIZE = 5
+POPULATION_SIZE = 150   
+GENERATIONS = 50        
+TOURNAMENT_SIZE = 7
 BASE_CROSSOVER_RATE = 0.8
-BASE_MUTATION_RATE = 0.1
+BASE_MUTATION_RATE = 0.15
 
 # ==========================================
 # HELPER: TREE ANALYSIS
 # ==========================================
 
 def count_nodes(node):
-    """
-    Recursively counts nodes to punish 'Bloat' (overly long code).
-    """
-    if node is None:
-        return 0
-    # Check if the node is an Operation (has children) or Terminal
-    # We check attributes to be safe with different Node implementations
+    """Recursively counts nodes to punish 'Bloat'."""
+    if node is None: return 0
     count = 1
-    if hasattr(node, 'left') and node.left:
+    if hasattr(node, 'child'): 
+        count += count_nodes(node.child)
+    elif hasattr(node, 'left'): 
         count += count_nodes(node.left)
-    if hasattr(node, 'right') and node.right:
         count += count_nodes(node.right)
     return count
 
 def get_node_list(node, parent=None, side=None):
-    """
-    Flattens the tree so we can pick random nodes easily.
-    """
-    nodes = []
-    nodes.append({'node': node, 'parent': parent, 'side': side})
-    
-    if hasattr(node, 'left') and node.left:
-        nodes.extend(get_node_list(node.left, node, 'left'))
-    if hasattr(node, 'right') and node.right:
-        nodes.extend(get_node_list(node.right, node, 'right'))
+    """Flattens the tree so we can pick random nodes easily."""
+    nodes = [{'node': node, 'parent': parent, 'side': side}]
+    if hasattr(node, 'child'): 
+        nodes.extend(get_node_list(node.child, node, 'child'))
+    elif hasattr(node, 'left'): 
+        if node.left: nodes.extend(get_node_list(node.left, node, 'left'))
+        if node.right: nodes.extend(get_node_list(node.right, node, 'right'))
     return nodes
 
 def swap_node(target_info, new_subtree):
-    """
-    Performs the transplant of logic.
-    """
+    """Performs the transplant of logic."""
     parent = target_info['parent']
     side = target_info['side']
-    
-    if parent is None:
-        return new_subtree # Replaced Root
-    
-    if side == 'left':
-        parent.left = new_subtree
-    elif side == 'right':
-        parent.right = new_subtree
-        
+    if parent is None: return new_subtree 
+    if side == 'left': parent.left = new_subtree
+    elif side == 'right': parent.right = new_subtree
+    elif side == 'child': parent.child = new_subtree 
     return None
 
 # ==========================================
@@ -73,23 +60,15 @@ def swap_node(target_info, new_subtree):
 # ==========================================
 
 def tournament_selection(population):
-    """
-    Picks K candidates and chooses the best one (lowest score).
-    """
     candidates = random.sample(population, TOURNAMENT_SIZE)
-    # Sort by Score first, then by Size (Parismony Pressure)
     candidates.sort(key=lambda x: (x['score'], x['size']))
     return candidates[0]['tree']
 
 def crossover(parent1, parent2):
     child = copy.deepcopy(parent1)
-    
     nodes_child = get_node_list(child)
     nodes_donor = get_node_list(parent2)
-    
-    # Safety check: if trees are empty/broken
-    if not nodes_child or not nodes_donor:
-        return child
+    if not nodes_child or not nodes_donor: return child
 
     target = random.choice(nodes_child)
     donor = random.choice(nodes_donor)
@@ -101,129 +80,153 @@ def crossover(parent1, parent2):
 def mutation(tree):
     mutated_tree = copy.deepcopy(tree)
     nodes = get_node_list(mutated_tree)
-    
-    if not nodes: 
-        return mutated_tree
+    if not nodes: return mutated_tree
 
     target = random.choice(nodes)
-    # Generate a small random subtree (Depth 2 ensures we don't just add single variables)
-    new_subtree = env.generate_random_tree(depth=2)
+    new_subtree = gp.generate_random_tree(depth=2)
     
     new_root = swap_node(target, new_subtree)
     return new_root if new_root else mutated_tree
 
 # ==========================================
-# VISUALIZATION
+# REPORTING & VISUALIZATION
 # ==========================================
-def plot_stats(best_scores, avg_scores):
-    if not HAS_MATPLOTLIB:
-        return
+
+def print_final_report(session_data):
+    """Generates a neat ASCII table of the session."""
+    print("\n" + "="*100)
+    print(f"{'GENESIS AI: SESSION SUMMARY':^100}")
+    print("="*100)
+    print(f"{'LVL':<4} | {'TARGET (ORACLE FORMULA)':<35} | {'AI DISCOVERED FORMULA':<35} | {'GENS':<5} | {'STATUS'}")
+    print("-" * 100)
     
-    plt.figure(figsize=(10, 6))
-    plt.plot(best_scores, label='Best Error (Lower is better)', color='red', linewidth=2)
-    plt.plot(avg_scores, label='Average Population Error', color='blue', linestyle='--', alpha=0.6)
+    for entry in session_data:
+        target = (str(entry['target'])[:32] + '..') if len(str(entry['target'])) > 32 else str(entry['target'])
+        solution = (str(entry['solution'])[:32] + '..') if len(str(entry['solution'])) > 32 else str(entry['solution'])
+        status_icon = "✅" if entry['status'] == "SOLVED" else "❌"
+        print(f"{entry['level']:<4} | {target:<35} | {solution:<35} | {entry['gens']:<5} | {status_icon}")
+        
+    print("="*100 + "\n")
+
+def plot_session_summary(all_histories):
+    """Plots all levels on one graph at the very end."""
+    if not HAS_MATPLOTLIB or not all_histories: return
     
-    plt.title('Genetic Algorithm Convergence')
+    plt.figure(figsize=(12, 7))
+    
+    # Loop through saved histories and plot them
+    for level, history in all_histories.items():
+        plt.plot(history, label=f'Level {level}', linewidth=2, alpha=0.8)
+    
+    plt.title('GENESIS AI: Performance Comparison Across Levels')
     plt.xlabel('Generations')
-    plt.ylabel('Fitness Score (Error)')
+    plt.ylabel('Error Rate (Log Scale recommended if errors vary widely)')
+    plt.yscale('log') # Log scale makes it easier to see convergence to 0
+    plt.grid(True, which="both", ls="--")
     plt.legend()
-    plt.grid(True)
+    
+    print(">>> Displaying Cumulative Performance Graph...")
     plt.show()
 
 # ==========================================
-# MAIN EVOLUTION LOOP
+# CORE EVOLUTION ENGINE
 # ==========================================
 
-def run_evolution():
-    print("--- GENESIS AI: ADVANCED MODE ---")
-    
-    # 1. INITIALIZATION
+def evolve_solution(level_num):
+    """Runs the genetic algorithm for a single level."""
     population = []
-    print(f"Initializing Population ({POPULATION_SIZE} programs)...")
     for _ in range(POPULATION_SIZE):
-        tree = env.generate_random_tree(depth=4)
-        score = env.calculate_fitness(tree)
-        size = count_nodes(tree)
-        population.append({'tree': tree, 'score': score, 'size': size})
+        tree = gp.generate_random_tree(depth=4)
+        score = problem.calculate_fitness(tree)
+        population.append({'tree': tree, 'score': score, 'size': count_nodes(tree)})
 
-    # Stats Tracking
     history_best = []
-    history_avg = []
+    solved = False
+    best_tree_found = None
+    generations_used = GENERATIONS
     
-    # Adaptive Logic Tracking
-    stagnation_counter = 0
-    last_best_score = float('inf')
-    current_mutation_rate = BASE_MUTATION_RATE
-
-    # 2. GENERATIONAL LOOP
     for gen in range(1, GENERATIONS + 1):
-        
-        # Sort: Primary Key = Score (Ascending), Secondary Key = Size (Ascending)
-        # This implements "Bloat Control" - prefer shorter code if scores are tied
         population.sort(key=lambda x: (x['score'], x['size']))
+        best = population[0]
+        history_best.append(best['score'])
         
-        best_program = population[0]
-        avg_score = sum(p['score'] for p in population) / len(population)
+        best_tree_found = best['tree']
+        generations_used = gen
         
-        # Log Stats
-        history_best.append(best_program['score'])
-        history_avg.append(avg_score)
-        
-        print(f"Gen {gen}: Best Score = {best_program['score']} | Avg Score = {avg_score:.2f} | Size = {best_program['size']}")
+        if gen % 10 == 0 or gen == 1:
+            print(f"   Gen {gen}: Error = {best['score']:.4f}")
 
-        # CHECK SUCCESS
-        if best_program['score'] == 0:
-            print(f"\n>>> PERFECT SOLUTION FOUND IN GEN {gen} <<<")
-            print("Code:", best_program['tree'])
+        if best['score'] < 0.1:
+            print(f"   >>> SOLVED in Gen {gen}!")
+            print(f"   >>> AI Solution: {best['tree']}")
+            solved = True
             break
 
-        # ADAPTIVE MUTATION LOGIC
-        # If we haven't improved for 3 generations, panic and increase mutation
-        if best_program['score'] == last_best_score:
-            stagnation_counter += 1
-        else:
-            stagnation_counter = 0
-            last_best_score = best_program['score']
-            current_mutation_rate = BASE_MUTATION_RATE # Reset to normal
-
-        if stagnation_counter >= 3:
-            current_mutation_rate = 0.4 # Boost mutation to 40%
-            print(f"   [!] Stagnation detected. Boosting mutation rate to {current_mutation_rate}")
-
-        # PREPARE NEXT GENERATION
-        next_gen = []
-        
-        # Elitism: Keep the top 5 programs (Survivors)
-        next_gen.extend(population[:5])
-        
+        next_gen = population[:10]
         while len(next_gen) < POPULATION_SIZE:
-            # Selection
             p1 = tournament_selection(population)
             p2 = tournament_selection(population)
-            
-            # Crossover
-            if random.random() < BASE_CROSSOVER_RATE:
-                child_tree = crossover(p1, p2)
-            else:
-                child_tree = copy.deepcopy(p1)
-            
-            # Mutation (Dynamic Rate)
-            if random.random() < current_mutation_rate:
-                child_tree = mutation(child_tree)
-            
-            # Evaluate Child
-            score = env.calculate_fitness(child_tree)
-            size = count_nodes(child_tree)
-            next_gen.append({'tree': child_tree, 'score': score, 'size': size})
-            
+            child = crossover(p1, p2) if random.random() < BASE_CROSSOVER_RATE else copy.deepcopy(p1)
+            if random.random() < BASE_MUTATION_RATE: child = mutation(child)
+            score = problem.calculate_fitness(child)
+            next_gen.append({'tree': child, 'score': score, 'size': count_nodes(child)})
         population = next_gen
 
-    print("\n--- EVOLUTION COMPLETE ---")
-    print("Final Best Code:")
-    print(population[0]['tree'])
+    return solved, history_best, best_tree_found, generations_used
+
+# ==========================================
+# INFINITE MODE CONTROLLER
+# ==========================================
+
+def run_infinite_mode():
+    print("\n==========================================")
+    print(" GENESIS: INFINITE DISCOVERY MODE ")
+    print(" The AI will face endlessly generated formulas.")
+    print("==========================================\n")
     
-    # Plot results
-    plot_stats(history_best, history_avg)
+    level = 1
+    difficulty = 2 
+    session_data = [] 
+    all_histories = {} # Store graph data here
+    
+    while True:
+        print(f"\n--- LEVEL {level} (Complexity Depth: {difficulty}) ---")
+        problem.generate_new_environment(difficulty_depth=difficulty)
+        
+        # Run AI
+        success, history, best_tree, gens = evolve_solution(level)
+        
+        # Store Data
+        status_str = "SOLVED" if success else "FAILED"
+        session_data.append({
+            'level': level,
+            'target': str(problem.HIDDEN_TRUTH_TREE),
+            'solution': str(best_tree),
+            'gens': gens,
+            'status': status_str
+        })
+        all_histories[level] = history # Save for final graph
+        
+        # Interaction Logic
+        if success:
+            print(f"   [+] Level {level} Complete.")
+            choice = input(f"   >>> Continue to Level {level+1}? (y/n): ")
+            if choice.lower() == 'y':
+                level += 1
+                if level % 3 == 0:
+                    difficulty += 1
+                    print("   [!] WARNING: Difficulty Increasing!")
+            else:
+                break
+        else:
+            print("   [-] AI Failed.")
+            choice = input("   >>> Try again? (y/n): ")
+            if choice.lower() != 'y':
+                break
+    
+    # FINAL OUTPUT
+    print_final_report(session_data)
+    plot_session_summary(all_histories)
 
 if __name__ == "__main__":
-    run_evolution()
+    run_infinite_mode()
