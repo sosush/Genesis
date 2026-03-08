@@ -174,13 +174,10 @@ if st.session_state.page == "LANDING":
         st.markdown("<h1 style='text-align: center; font-size: 80px; color: #b388ff;'>GENESIS</h1>", unsafe_allow_html=True)
         st.markdown("<h3 style='text-align: center; color: #9575cd;'>Autonomous Logic Synthesis Engine</h3>", unsafe_allow_html=True)
         st.markdown("---")
-        b1, b2 = st.columns(2)
-        with b1:
-            if st.button("🧪 LAUNCH DISCOVERY MODE", use_container_width=True):
+        if st.button("Begin Discovery", use_container_width=True):
                 st.session_state.page = "DASHBOARD"
                 st.rerun()
-        with b2:
-            st.info("Status: System Operational. Ready for CSV Injection or Simulation.")
+
 
 # ==========================================
 # PAGE: DASHBOARD (Unified)

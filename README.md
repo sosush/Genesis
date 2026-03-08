@@ -1,74 +1,94 @@
-🧬 GENESIS: Clinical Logic Engine
-=================================
+# 🧬 GENESIS: Clinical Logic Discovery Engine
 
-1\. Project Overview
---------------------
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=flat&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Active-success)
 
-Genesis is an AI software that acts like a "Robotic Data Scientist." It takes raw patient data (Weight, Age, Medical History) and uses **Genetic Programming** to autonomously discover the mathematical formula required for safe drug dosage. It solves the "Black Box" problem in medical AI.
+> **"Bridging the gap between Black Box AI and Medical Safety through Evolutionary Symbolic Regression."**
 
-2\. Prerequisites
------------------
+---
 
-To run this software, you need **Python** installed on your computer.
+## 📖 Overview
 
-1.  Download Python here: [python.org/downloads](https://www.google.com/url?sa=E&q=https://www.python.org/downloads/)
-    
-2.  During installation, make sure to check the box: **"Add Python to PATH"**.
-    
+**Genesis** is an Explainable AI (XAI) system designed for high-stakes environments like Precision Medicine. 
 
-3\. Installation Guide
-----------------------
+Unlike traditional Neural Networks which output opaque predictions, Genesis uses **Genetic Programming (GP)** to evolve human-readable mathematical formulas from raw data. It acts as an "Automated Data Scientist," ingesting clinical datasets (e.g., Patient Weight, Age, Dosage History) and autonomously discovering the underlying biological laws governing drug metabolism.
 
-1.  Unzip this project folder.
-    
-2.  Open your **Command Prompt** (Windows) or **Terminal** (Mac/Linux).
-    
-3.  Navigate to this folder using the cd command.
-    
-    *   _Example:_ cd Downloads/Genesis\_Project
-        
-4.  codeBashpip install streamlit pandas plotly graphviz sympy_(Note: For the Tree Visualization to work perfectly, you may need the Graphviz system software installed, but the app will work without it)._
-    
+### 🚩 The Problem
+In clinical settings, doctors cannot blindly trust AI predictions ("Black Boxes"). They need to know *why* a specific dosage is recommended.
 
-4\. How to Run the App
-----------------------
+### ✅ The Solution
+Genesis outputs **Symbolic Logic**—an algebraic formula that can be audited, verified, and understood by medical professionals before application.
 
-1.  codeBashstreamlit run app.py
-    
-2.  A new tab will automatically open in your web browser (Chrome/Edge).
-    
-3.  You will see the **GENESIS Dashboard**.
-    
+---
 
-5\. How to Use the App
-----------------------
+## ✨ Key Features
 
-1.  **Landing Page:** Click **"RUN ON KNOWN FORMULA"** to enter the Clinical Simulator.
-    
-2.  **Dashboard:**
-    
-    *   **Left Sidebar:** You can add specific patients manually or reset the database.
-        
-    *   **Scenario Config:** Change the "Target Formula" (e.g., switch from Linear Dose to Geriatric Decay) to test if the AI is truly smart.
-        
-3.  **Running the AI:**
-    
-    *   Click the purple **"GENERATE FORMULA"** button.
-        
-    *   Watch the progress bar and the logs as the AI evolves logic in real-time.
-        
-4.  **Verification:**
-    
-    *   Once finished, scroll down.
-        
-    *   Open the **"Evolutionary Logs"** dropdown to see which formulas survived and died.
-        
-    *   Open the **"3D Visuals"** to see the math surface mapped against patient data.
-        
+*   **🧬 Evolutionary Search Engine:** Uses Darwinian Natural Selection (Crossover, Mutation, Elitism) to synthesize logic trees.
+*   **🏥 Clinical Simulator:** Integrated environment to generate synthetic patient cohorts for validation.
+*   **🔌 CSV Data Pipeline:** Support for ingesting external real-world datasets for analysis.
+*   **🧊 3D Manifold Visualization:** Interactive 3D plotting to visualize the "Shape" of the discovered formula against ground truth data.
+*   **🧮 Math Kernel:** Built-in SymPy integration to algebraically simplify and verify derived equations.
+*   **📜 Flight Recorder:** Detailed logs of the evolutionary process, showing survivors, rejected trees, and breeding events per generation.
 
-6\. Troubleshooting
--------------------
+---
 
-*   _Error: "Command not found":_ Make sure Python is added to your system PATH.
-    
-*   _Error: "Module not found":_ Run the pip install command again and check for typos.
+## 🛠️ Tech Stack
+
+*   **Language:** Python 3.x
+*   **Frontend:** Streamlit (Cyberpunk UI Theme)
+*   **Data Processing:** Pandas, NumPy
+*   **Visualization:** Plotly (3D), Graphviz (Tree Structures)
+*   **Symbolic Math:** SymPy
+
+---
+
+## Installation Guide
+
+### Prerequisites
+*   Python 3.8 or higher installed.
+*   (Optional but recommended) Graphviz system binary installed for tree visualization.
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/genesis-clinical-ai.git
+cd genesis-clinical-ai
+```
+
+### 2. Set up a Virtual Environment 
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Mac/Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install streamlit pandas plotly graphviz sympy
+```
+---
+## Usage
+Run the application using the Streamlit CLI:
+```bash
+streamlit run app.py
+```
+Once running:
+*   **Select Mode:** Choose between "Run on Known Formula" (Simulation) or "Invent" (CSV Upload).
+*   **Configure Scenario:** Select a medical scenario (e.g., Linear Dose vs. Geriatric Decay).
+*   **Initiate Discovery:** Click the "Generate Formula" button to start the evolutionary engine.
+*   **Verify:** Expand the "Deep Dive" sections to view 3D graphs, Logic Trees, and Algebraic proofs.
+
+---
+## Project Structure
+```
+Genesis_Project/
+├── app.py              # Main Application (UI, State Management, Viz)
+├── gp_engine.py        # Core Logic (Node Classes, Tree Generation, Recursion)
+├── requirements.txt    # List of dependencies
+└── README.md           # Documentation
+```
+
