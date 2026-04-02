@@ -1,94 +1,96 @@
-# 🧬 GENESIS: Clinical Logic Discovery Engine
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=flat&logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Active-success)
+<img width="1470" height="104" alt="Screenshot 2026-04-02 at 1 59 49 PM" src="https://github.com/user-attachments/assets/f270afc1-918c-4d0b-a344-e1037be44e10" />
 
-> **"Bridging the gap between Black Box AI and Medical Safety through Evolutionary Symbolic Regression."**
+## THE AUTONOMOUS EVOLUTIONARY FRAMEWORK FOR ALGORITHMIC DISCOVERY
 
----
-
-## 📖 Overview
-
-**Genesis** is an Explainable AI (XAI) system designed for high-stakes environments like Precision Medicine. 
-
-Unlike traditional Neural Networks which output opaque predictions, Genesis uses **Genetic Programming (GP)** to evolve human-readable mathematical formulas from raw data. It acts as an "Automated Data Scientist," ingesting clinical datasets (e.g., Patient Weight, Age, Dosage History) and autonomously discovering the underlying biological laws governing drug metabolism.
-
-### 🚩 The Problem
-In clinical settings, doctors cannot blindly trust AI predictions ("Black Boxes"). They need to know *why* a specific dosage is recommended.
-
-### ✅ The Solution
-Genesis outputs **Symbolic Logic**—an algebraic formula that can be audited, verified, and understood by medical professionals before application.
+Genesis is a research-grade Artificial Intelligence system designed to solve the "Grand Challenge" of automated software engineering: the synthesis of complex algorithmic logic from unstructured natural language specifications. Unlike traditional machine learning models that perform statistical mimicry, Genesis utilizes a hybrid Neuro-Symbolic architecture to navigate the infinite search space of computer programs and evolve functional, human-readable solutions.
 
 ---
 
-## ✨ Key Features
+## PROJECT ARCHITECTURE
 
-*   **🧬 Evolutionary Search Engine:** Uses Darwinian Natural Selection (Crossover, Mutation, Elitism) to synthesize logic trees.
-*   **🏥 Clinical Simulator:** Integrated environment to generate synthetic patient cohorts for validation.
-*   **🔌 CSV Data Pipeline:** Support for ingesting external real-world datasets for analysis.
-*   **🧊 3D Manifold Visualization:** Interactive 3D plotting to visualize the "Shape" of the discovered formula against ground truth data.
-*   **🧮 Math Kernel:** Built-in SymPy integration to algebraically simplify and verify derived equations.
-*   **📜 Flight Recorder:** Detailed logs of the evolutionary process, showing survivors, rejected trees, and breeding events per generation.
+<img width="1470" height="773" alt="Screenshot 2026-04-02 at 2 02 03 PM" src="https://github.com/user-attachments/assets/95192320-3549-419c-80ed-ae578d8c4068" />
+
 
 ---
 
-## 🛠️ Tech Stack
+## ACADEMIC CONTEXT & RESEARCH BASE
 
-*   **Language:** Python 3.x
-*   **Frontend:** Streamlit (Cyberpunk UI Theme)
-*   **Data Processing:** Pandas, NumPy
-*   **Visualization:** Plotly (3D), Graphviz (Tree Structures)
-*   **Symbolic Math:** SymPy
+This project was developed as an incremental study in "Evolutionary Computation" and "Symbolic AI." The system's intelligence is not derived from a static database but is instead the result of an active, directed search through the space of all possible Python Abstract Syntax Trees (ASTs).
+
+### THE EVOLUTIONARY STAGES
+
+1.  **Phase I: Stochastic Initialization**
+    The project began with a "Pure Genetic Programming" approach. We represented logic as simple tree structures and used random mutations to find mathematical relationships. While effective for basic regression, this phase struggled with high-dimensional algorithmic logic.
+
+2.  **Phase II: Semantic Parsing**
+    To handle complex problems (e.g., Robot Collisions, Dynamic Programming), we integrated Natural Language Understanding (NLU). This allowed the engine to "read" problem constraints and identify critical variables, providing a "Heuristic Seed" to the genetic pool.
+
+3.  **Phase III: Global Constraint Satisfaction**
+    The final iteration introduced "Persistent Genetic Memory." By maintaining a registry of failed test cases, the system evolved a "Multi-Objective Fitness Function," ensuring that new mutations satisfied all previous constraints simultaneously, solving the "Regression Problem" common in AI synthesis.
+
+---
+
+## CORE AI CONCEPTS IMPLEMENTED
+
+### 1. GENETIC PROGRAMMING (THE PRIMITIVE BACKEND)
+Genesis treats every Python function as a **Genome**. The engine utilizes Darwinian principles to optimize code:
+*   **Tournament Selection:** The "Survival of the Fittest" protocol where programs are ranked by their ability to satisfy unit tests.
+*   **Stochastic Search:** Navigating the non-linear "Fitness Landscape" of programming logic to escape local optima.
+*   **Parsimony Pressure:** An implementation of **Occam's Razor**, where the fitness function penalizes "Bloat" (unnecessarily long code), forcing the AI to evolve elegant, efficient algorithms.
+
+### 2. NEURO-SYMBOLIC INDUCTION (THE MODERN INTEGRATION)
+While the Genetic Algorithm handles the "Search," we utilize Large Language Models (LLMs) via the Groq LPU (Llama-3.3-70B) as **Heuristic Catalysts**:
+*   **Directed Mutation:** Instead of random bit-flipping, the LLM analyzes compiler errors and "mutates" the logic with semantic intent.
+*   **Heuristic Seeding:** The LLM provides the "Primordial Soup"—initial logical candidates that are close to the target solution—significantly reducing the search time.
 
 ---
 
-## Installation Guide
+## DISCOVERIES & RESEARCH FINDINGS
 
-### Prerequisites
-*   Python 3.8 or higher installed.
-*   (Optional but recommended) Graphviz system binary installed for tree visualization.
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/genesis-clinical-ai.git
-cd genesis-clinical-ai
-```
-
-### 2. Set up a Virtual Environment 
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Mac/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
-pip install streamlit pandas plotly graphviz sympy
-```
----
-## Usage
-Run the application using the Streamlit CLI:
-```bash
-streamlit run app.py
-```
-Once running:
-*   **Select Mode:** Choose between "Run on Known Formula" (Simulation) or "Invent" (CSV Upload).
-*   **Configure Scenario:** Select a medical scenario (e.g., Linear Dose vs. Geriatric Decay).
-*   **Initiate Discovery:** Click the "Generate Formula" button to start the evolutionary engine.
-*   **Verify:** Expand the "Deep Dive" sections to view 3D graphs, Logic Trees, and Algebraic proofs.
+Through the development of Genesis, several key AI behaviors were observed:
+*   **Convergence Patterns:** We discovered that "Hard" algorithmic problems (O(N log N)) require a highly directed mutation signal. Random search is insufficient for discovering complex data structures like Monotonic Stacks.
+*   **Semantic vs. Syntactic Learning:** The system demonstrates that AI can "understand" the intent of a problem (Semantics) before it can perfectly execute the syntax (Indentation/Structure).
+*   **Regression Sensitivity:** We found that without "Persistent Memory," the evolutionary process often breaks one logic gate while fixing another. The introduction of a "Constraint Registry" was the turning point for solving LeetCode Hard problems.
 
 ---
-## Project Structure
-```
-Genesis_Project/
-├── app.py              # Main Application (UI, State Management, Viz)
-├── gp_engine.py        # Core Logic (Node Classes, Tree Generation, Recursion)
-├── requirements.txt    # List of dependencies
-└── README.md           # Documentation
-```
 
+## SHORTCOMINGS & LIMITATIONS
+
+*   **Search Space Explosion:** As the number of nested loops increases, the time required for genetic convergence grows exponentially.
+*   **Context Window Constraints:** Extremely long problem descriptions can dilute the NLU's ability to extract specific constraints.
+*   **Inference Costs:** The reliance on high-parameter models (70B+) for mutation logic requires significant computational throughput.
+
+---
+
+## GETTING STARTED
+
+### PREREQUISITES
+*   Python 3.10+
+*   Groq API Key (Llama-3.3-70B-Versatile)
+*   Streamlit
+
+### INSTALLATION
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/sosush/Genesis.git
+   cd Genesis
+   ```
+2. Install dependencies:
+   ```Bash
+   pip install streamlit groq python-dotenv
+   ```
+2. Configure environment variables:
+   Create a .env file in the root directory:
+   ```Env
+    GROQ_API_KEY=your_groq_api_key
+    GROQ_MODEL=llama-3.3-70b-versatile
+   ```
+### USAGE
+   Run the induction engine:
+   ```Bash
+   streamlit run app.py
+   ```
+---
+
+*NOTE: This project is intended for research and educational purposes only. It explores the boundaries of autonomous program synthesis and the synergy between classical and modern Artificial Intelligence.*
