@@ -1,94 +1,79 @@
+import os
 import random
-import math
+import json
+from groq import Groq
+from dotenv import load_dotenv
 
-class Node:
+load_dotenv()
+
+class GeneticArchitect:
     def __init__(self):
-        self.left = None
-        self.right = None
-    
-    def evaluate(self, data_row):
-        raise NotImplementedError
+        self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        self.model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
-class Terminal(Node):
-    def __init__(self, value):
-        super().__init__()
-        self.value = value
+    def parse_problem(self, raw_text):
+        """Natural Language Understanding: Extracting structural constraints."""
+        prompt = f"""
+        Extract structured data from this algorithmic problem text.
+        Output ONLY a JSON object in this exact format:
+        {{
+            "description": "Logic summary",
+            "examples": [
+                {{"input": "raw_in", "output": "expected_out"}}
+            ],
+            "constraints": ["list"]
+        }}
+        
+        PROBLEM TEXT:
+        {raw_text}
+        """
+        res = self.client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model=self.model,
+            response_format={"type": "json_object"}
+        )
+        return json.loads(res.choices[0].message.content)
 
-    def evaluate(self, data_row):
-        if isinstance(self.value, str):
-            return data_row.get(self.value, 1)
-        return self.value
+    def generate_primordial_soup(self, parsed_data, header):
+        """Heuristic Population Seeding: Initializing the search space."""
+        prompt = f"""
+        Act as a Genetic Programming Seed Generator.
+        Problem: {parsed_data['description']}
+        
+        CODE SIGNATURE:
+        {header}
+        
+        Generate 4 diverse logical candidates (DP, Stack, Greedy, or Hash-Map).
+        Output ONLY the 4 code blocks separated by '---'. 
+        No markdown code fences, no text, no chatter.
+        """
+        res = self.client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model=self.model
+        )
+        raw_candidates = res.choices[0].message.content.split('---')
+        return [{"code": c.strip().replace("```python", "").replace("```", ""), "fitness": 0.0} for c in raw_candidates[:4]]
 
-    def __repr__(self):
-        return str(self.value)
-
-class Operation(Node):
-    def __init__(self, left, right, op_char):
-        super().__init__()
-        self.left = left
-        self.right = right
-        self.op = op_char
-
-    def evaluate(self, data_row):
-        if self.left is None or self.right is None: return 0
-        l = self.left.evaluate(data_row)
-        r = self.right.evaluate(data_row)
-        try:
-            if self.op == '+': return l + r
-            if self.op == '-': return l - r
-            if self.op == '*': return l * r
-            if self.op == '/': return 1 if abs(r) < 0.001 else l / r
-        except: return 0
-        return 0
-
-    def __repr__(self):
-        return f"({self.left} {self.op} {self.right})"
-
-# --- SMART GENERATOR ---
-def generate_random_tree(depth=4, feature_names=['x']):
-    """
-    Biased generator that prioritizes 'Medical Constants' 
-    to ensure convergence in < 10 generations.
-    """
-    if depth == 0 or (random.random() < 0.3 and depth < 4):
-        # 50% Variable, 50% Smart Constant
-        if random.random() < 0.5:
-            choice = random.choice(feature_names)
-        else:
-            # HEURISTIC: These are the exact numbers used in your scenarios.
-            # Giving the AI these 'blocks' makes it converge incredibly fast.
-            smart_constants = [1, 2, 5, 10, 50, 100, 1000] 
-            choice = random.choice(smart_constants)
-        return Terminal(choice)
-    else:
-        op = random.choice(['+', '-', '*', '/'])
-        left = generate_random_tree(depth - 1, feature_names)
-        right = generate_random_tree(depth - 1, feature_names)
-        return Operation(left, right, op)
-
-# Tree Surgery Tools
-def count_nodes(node):
-    if node is None: return 0
-    c = 1
-    if hasattr(node, 'left'): c += count_nodes(node.left) + count_nodes(node.right)
-    return c
-
-def get_subtrees(node):
-    nodes = [node]
-    if hasattr(node, 'left') and node.left: nodes.extend(get_subtrees(node.left))
-    if hasattr(node, 'right') and node.right: nodes.extend(get_subtrees(node.right))
-    return nodes
-
-def replace_subtree(target_root, old_node, new_node):
-    if target_root is old_node: return new_node
-    if hasattr(target_root, 'left') and target_root.left:
-        if target_root.left is old_node:
-            target_root.left = new_node
-            return target_root
-        replace_subtree(target_root.left, old_node, new_node)
-    if hasattr(target_root, 'right') and target_root.right:
-        if target_root.right is old_node:
-            target_root.right = new_node
-            return target_root
-        replace_subtree(target_root.right, old_node, new_node)
-    return target_root
+    def smart_mutate(self, parent_code, feedback_type, registry):
+        """Global Constraint Satisfaction: Directed Local Search."""
+        registry_str = "\n\n".join([f"CONSTRAINT {i+1}:\n{case}" for i, case in enumerate(registry)])
+        
+        prompt = f"""
+        PERFORM GLOBAL GENETIC MUTATION.
+        The current candidate failed multiple fitness tests.
+        
+        REQUIRED CONSTRAINTS:
+        {registry_str}
+        
+        CURRENT CODE:
+        {parent_code}
+        
+        TASK: Evolve a solution that satisfies ALL required constraints simultaneously. 
+        Analyze the logic gap between 'Output' and 'Expected'.
+        Output ONLY the updated code. No explanation.
+        """
+        res = self.client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model=self.model
+        )
+        return res.choices[0].message.content.strip().replace("```python", "").replace("```", "")
