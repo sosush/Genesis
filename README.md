@@ -57,6 +57,18 @@ Genesis includes a highly modular testing suite integrated with **MLflow** for e
 
 ---
 
+## 📚 Academic Context & Related Work
+
+Genesis builds upon several seminal concepts at the intersection of Deep Learning and Program Synthesis. This project is directly inspired by ongoing research attempting to solve the "cold start" and computational explosion problems inherent in genetic programming.
+
+- **Neuro-Symbolic Program Synthesis (Parisotto et al., ICLR 2017):** This foundational paper introduced the idea of integrating neural modules with symbolic execution to synthesize programs from input-output examples, overcoming the interpretability issues of pure neural approaches.
+- **Symbolic Regression via Neural-Guided Genetic Programming (Mundhenk et al., NeurIPS 2021):** Demonstrated that using Machine Learning to guide the initial population seeding or direct the evolutionary process leads to significantly higher success rates on complex mathematical benchmarks.
+- **Deep Symbolic Optimization (Petersen et al., 2020):** Highlighted the effectiveness of decoupling neural guidance (fast heuristics) from the raw symbolic search (exact execution constraints). Genesis employs a similar decoupled paradigm, where the PyTorch MLP acts strictly as a non-blocking pre-filter.
+
+By combining the **explainability and strict correctness** of symbolic execution with the **pattern-recognition and speed** of deep learning, Genesis provides a scalable framework for autonomous algorithmic discovery.
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -105,4 +117,10 @@ Genesis/
 
 ---
 
+## 🤝 Connect & Contribute
+
 *Note: This project was built to explore the boundaries of autonomous program synthesis, pushing beyond basic ML into systems engineering and multi-agent AI design.*
+
+If you found this research interesting, want to read more about the underlying systems, or have a contribution/collaboration in mind, please check out my portfolio and get in touch!
+
+🌐 **[sohinibanerjee.vercel.app](https://sohinibanerjee.vercel.app)**
