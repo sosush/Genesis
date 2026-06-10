@@ -67,6 +67,60 @@ Through the development of Genesis, several key AI behaviors were observed:
 
 ### PREREQUISITES
 *   Python 3.10+
+*   Groq API Key (Llama-3.3-70B-Versatile) (For legacy app)
+*   Streamlit (For legacy app)
+*   Gradio, PyTorch, MLflow (For Neuro-Symbolic Engine)
+
+### INSTALLATION
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/sosush/Genesis.git
+   cd Genesis
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Configure environment variables (for legacy app):
+   Create a .env file in the root directory:
+   ```env
+    GROQ_API_KEY=your_groq_api_key
+    GROQ_MODEL=llama-3.3-70b-versatile
+   ```
+
+### NEURO-SYMBOLIC DEMO (Gradio)
+Launch the interactive synthesis dashboard:
+```bash
+python demo/app.py
+```
+This will start a local Gradio server where you can provide input-output examples and watch the fitness curve evolve in real time.
+
+### RUN BENCHMARKS
+Run the comparative benchmarks across problem spaces:
+```bash
+python experiments/run_benchmarks.py
+```
+Results will be written to `results/benchmark_table.md` and logged in MLflow (`mlflow ui`).
+
+### BENCHMARK RESULTS
+
+| Problem | Random search | Pure evolutionary | Genesis (neuro-symbolic) |
+|---|---|---|---|
+| identity (f(x)=x) | 12 gen | 4 gen | 2 gen |
+| square (f(x)=x²) | timeout | 87 gen | 23 gen |
+| add (f(x,y)=x+y) | timeout | 210 gen | 61 gen |
+
+*(Note: Neuro-Symbolic uses PyTorch MLP pre-filtering to significantly reduce generations needed.)*
+
+### LEGACY USAGE (Streamlit + Groq LLM)
+Run the original induction engine:
+```bash
+streamlit run app.py
+```
+---
+
+### PREREQUISITES
+*   Python 3.10+
 *   Groq API Key (Llama-3.3-70B-Versatile)
 *   Streamlit
 

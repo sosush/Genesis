@@ -1,0 +1,5 @@
+pop_size: 100
+max_gen: 500
+mutation_rate: 0.3
+use_neural_scorer: true
+mlflow_tracking_uri: "sqlite:///mlflow.db"
