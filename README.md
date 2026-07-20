@@ -83,16 +83,24 @@ cd Genesis
 pip install -r requirements.txt
 ```
 
-### 2. Launch the Interactive Dashboard (Gradio)
-Experience the evolution in real-time. The dashboard allows you to define target input/output mapping (`1->1, 2->4, 3->9`) and watch the fitness trajectory as the system synthesizes the algorithm.
+### 2. Launch the Interactive Dashboard (FastAPI + React 3D Tree Viz)
+Experience the evolution in real-time. Watch individuals evolve in a 3D tree structure, trace lineages, view fitness distribution scatter plots, and compare algorithms (Random vs. Pure GP vs. Genesis) side-by-side.
 
+First, start the FastAPI backend:
 ```bash
-PYTHONPATH=. python demo/app.py
+PYTHONPATH=. uvicorn demo.server:app --reload --host 0.0.0.0 --port 8000
 ```
-*Navigates to `http://127.0.0.1:7860` locally.*
+
+Then, run the React frontend dev server (with proxy configured):
+```bash
+cd demo/frontend
+npm install
+npm run dev
+```
+*Navigate to `http://localhost:5173` locally.*
 
 ### 3. Run the Benchmarks
-To replicate the benchmark table and track experiments via MLflow:
+To replicate the benchmark table (note: these benchmark numbers are illustrative/not verified for the comparison suite until you run them locally) and track experiments via MLflow:
 ```bash
 PYTHONPATH=. python experiments/run_benchmarks.py
 mlflow ui
@@ -110,12 +118,16 @@ Genesis/
 │   ├── symbolic/        # Safe execution sandbox & evaluation
 │   └── synthesis/       # Core neuro-symbolic generation loop
 ├── benchmarks/          # Standard problem configurations
-├── demo/                # Interactive Gradio application
+├── demo/                # Interactive FastAPI + React 3D dashboard
 ├── experiments/         # MLflow benchmarking scripts
 └── tests/               # PyTest suite
 ```
 
 ---
+
+## 🗺️ Roadmap
+- **Richer Grammars (Tier 2):** Expanding the AST search space to support strings, lists, loops, and control-flow constructs to address standard algorithmic interview problems (LeetCode/HackerRank).
+- **GPU Acceleration:** Parallelizing MLP pre-filtering evaluations on CUDA devices for larger population capacities.
 
 ## 🤝 Connect & Contribute
 
